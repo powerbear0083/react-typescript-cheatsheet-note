@@ -72,3 +72,50 @@ type AppProps = {
 
 ```
 
+### 更多物件型別說明
+
+* 大多數的情況下，你都必須指定物件的型別如下例
+  
+```javascript
+const obj = { 
+  id: string; 
+  name: string 
+}
+```
+
+* 但是如果 object 沒有固定結構的話可使用 Record 這個縮寫
+* 但是如果 object 有確定的 type 但是 key 會改變或者結構會改變可使用  generics 泛型
+* Map 的數據結構在 React 不常見，因為 Map 是 mutable 可變數據結構，但是 React 偏好不變的數據
+* ("Vague" object types ) “模糊”對像類型，如 object、{} 相當小眾，應該很少使用，並且功能可能與您預期的不同。
+* JS 中的 Object 是  non-primitive value ，這包括 function、array、constructors
+
+
+## Useful React Prop Type Examples 實用 React Props 範例
+
+* 元件 Props 範例
+
+```javascript
+export declare interface AppProps {
+  children?: React.ReactNode; // best, accepts everything React can render ，最好的方式，接受任何東西，React 都可以渲染
+  childrenElement: JSX.Element; // A single React element ， 只接受 React Element
+  style?: React.CSSProperties; // to pass through style props  ， 傳入 style props
+  onChange?: React.FormEventHandler<HTMLInputElement>; // form events! the generic parameter is the type of event.target ， form event ，通用參數型別為 event target
+  //  more info: https://react-typescript-cheatsheet.netlify.app/docs/advanced/patterns_by_usecase/#wrappingmirroring
+  props: Props & React.ComponentPropsWithoutRef<"button">; // to impersonate all the props of a button element and explicitly not forwarding its ref ， 模擬 button element 但是沒有 ref
+  props2: Props & React.ComponentPropsWithRef<MyButtonWithForwardRef>; // to impersonate all the props of MyButtonForwardedRef and explicitly forwarding its ref ， 模擬 button element 使用 ref
+}
+```
+
+ ### JSX.Element vs React.ReactNode
+
+* JSX.Element -> Return value of React.createElement
+* React.ReactNode -> Return value of a component
+
+
+## Types of Interfaces
+
+使用 type or Interface ?
+
+[orta] (https://twitter.com/orta/status/1356129195835973632?s=20) 推薦直接使用 interface 直到你需要 type
+
+https://react-typescript-cheatsheet.netlify.app/docs/basic/getting-started/basic_type_example/
