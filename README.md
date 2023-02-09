@@ -119,3 +119,19 @@ export declare interface AppProps {
 [orta] (https://twitter.com/orta/status/1356129195835973632?s=20) 推薦直接使用 interface 直到你需要 type
 
 https://react-typescript-cheatsheet.netlify.app/docs/basic/getting-started/basic_type_example/
+
+### 更多建議
+
+一些實作的經驗法則
+
+* 如果在寫一些第三方套件，都使用 interface 來定義型別，這樣方便使用者在缺少某些型別的時候，可以夠過 extend 來自己擴展型別 
+* 撰寫 React 元件的時候，盡量使用 type 來定義 props 和 state，這樣可以保持元件的一致性並且更有約束性
+
+(更多經驗法則)[https://medium.com/@martin_hotell/interface-vs-type-alias-in-typescript-2-7-2a8f1777af4c]
+(TS 手冊也包含了一些撰寫規範)[https://www.typescriptlang.org/docs/handbook/2/everyday-types.html#differences-between-type-aliases-and-interfaces]
+
+> 面對大型專案，使用 interfaces 效能比較好
+> [https://github.com/microsoft/TypeScript/wiki/Performance#preferring-interfaces-over-intersections] (https://github.com/microsoft/TypeScript/wiki/Performance#preferring-interfaces-over-intersections) 但是有一些討論對此有一些[保留態度](https://news.ycombinator.com/item?id=25201887)
+
+
+https://react-typescript-cheatsheet.netlify.app/docs/basic/getting-started/basic_type_example/
