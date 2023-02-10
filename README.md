@@ -133,5 +133,20 @@ https://react-typescript-cheatsheet.netlify.app/docs/basic/getting-started/basic
 > 面對大型專案，使用 interfaces 效能比較好
 > [https://github.com/microsoft/TypeScript/wiki/Performance#preferring-interfaces-over-intersections] (https://github.com/microsoft/TypeScript/wiki/Performance#preferring-interfaces-over-intersections) 但是有一些討論對此有一些[保留態度](https://news.ycombinator.com/item?id=25201887)
 
+下面範例是一種很常用的型別寫法
 
-https://react-typescript-cheatsheet.netlify.app/docs/basic/getting-started/basic_type_example/
+```typescript
+type MyType = TypeA | TypeB
+```
+
+但是使用 interfaces 來宣告 type 會更容易 implementing or extending 
+
+## Types vs interfaces
+
+這是一份很微妙的比較，看看就好，不用想太多
+
+| Aspect | Type | Interface |
+| 可以描述 functions (Can describe functions) | V | V |
+| 可以描述 (constructors) |  V |  V |
+| 可以描述 (tuples) |  V |  V |
+| interfaces 可擴展 |  ! |  V |
