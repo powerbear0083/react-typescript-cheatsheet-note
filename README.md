@@ -259,3 +259,34 @@ const VoidFunctionComponent: React.VoidFunctionComponent<Props> = ({
 在大多數的情況，使用那種語法都沒有差，但是你可能會比較喜歡 React.FunctionComponent
 
 ### 小陷阱 ( Minor Pitfalls )
+
+這種模式不再 supported
+
+#### Conditional rendering
+
+```typescript
+
+const MyConditionalComponent = ({ shouldRender = false }) =>
+  shouldRender ? <div /> : false; // 也不要在 JS 這樣做 don't do this in JS either
+const el = <MyConditionalComponent />; // throws an error
+
+```
+
+這個會報錯的原因，是因為 function components 只能 return JSX Element 或者 null ，不然 TS 會發出一個 error message ，指出這個元件，不可 assignable　to element
+
+#### Array.fill
+
+```typescript
+const MyArrayComponent = () => Array(5).fill(<div />);
+const el2 = <MyArrayComponent />; // throws an error
+
+```
+
+Array.fill 會回傳一個陣列，這種寫法 TS 無法編譯，如果需要寫法，可以參考下面
+
+```typescript
+const MyArrayComponent = () => Array(5).fill(<div />) as any as JSX.Element;
+
+```
+
+https://react-typescript-cheatsheet.netlify.app/docs/basic/getting-started/hooks
