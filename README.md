@@ -289,4 +289,49 @@ const MyArrayComponent = () => Array(5).fill(<div />) as any as JSX.Element;
 
 ```
 
-https://react-typescript-cheatsheet.netlify.app/docs/basic/getting-started/hooks
+## Hooks
+
+從 @types/react v16.8 以上的版本 開始支援 Hooks
+
+
+### useState
+
+型別推斷 (Type inference) 用在簡單的值是很有效的
+
+```typescript
+const [state, setState] = useState(false);
+// `state` 會被推斷為 boolean
+// `state` is inferred to be a boolean
+// `setState` 只接受 boolean
+// `setState` only takes booleans
+
+```
+
+也可以查看 [Using inferred Types](https://react-typescript-cheatsheet.netlify.app/docs/basic/troubleshooting/types/#using-inferred-types) 章節，如果你需要更多複雜的型別
+
+在開發過程中使用 Hooks 時，你可能需要將 null (null-ish) 設定為初始值， 為了明確定義 Hooks 的初始型別，可以使用 union type 來定義初始值
+
+```typescript
+
+const [user, setUser] = useState<User | null>(null);
+
+// later...
+setUser(newUser);
+
+```
+
+如果一個狀態在設定後，很快就被初始化並且在之後總是有一個值，可以使用 type assertions (型別斷言)
+
+```typescript
+const [user, setUser] = useState<User>({} as User);
+
+// later...
+setUser(newUser);
+
+```
+
+上面這種寫法只是暫時欺騙 TS ，讓 TS 在編譯的時候以為  {} 的型別是 User
+正確的作法是，你應該把 user 裡面的所有型別都一個一個定義好
+如果沒有這樣做，由於 user 的型別是依賴 User ，在 runtime 的時候可能會報錯
+
+https://react-typescript-cheatsheet.netlify.app/docs/basic/getting-started/hooks/
