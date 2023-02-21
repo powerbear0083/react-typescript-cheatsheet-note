@@ -334,4 +334,160 @@ setUser(newUser);
 正確的作法是，你應該把 user 裡面的所有型別都一個一個定義好
 如果沒有這樣做，由於 user 的型別是依賴 User ，在 runtime 的時候可能會報錯
 
+### useCallback
+
+定義 useCallback 型別可以如下面的寫法
+
+```typescript
+const memoizedCallback = useCallback(
+  (param1: string, param2: number) => {
+    console.log(param1, param2)
+    return { ok: true }
+  },
+  [...],
+);
+/**
+ * VSCode will show the following type:
+ * const memoizedCallback:
+ *  (param1: string, param2: number) => { ok: boolean }
+ */
+
+```
+
+在 React < 18 ，useCallback 的 function signature 預設為 any[] 型別 
+
+```typescript
+function useCallback<T extends (...args: any[]) => any>(
+  callback: T,
+  deps: DependencyList
+): T;
+
+```
+
+在 React >= 18 ，useCallback 的 function signature 改為以下
+
+```typescript
+function useCallback<T extends Function>(callback: T, deps: DependencyList): T;
+
+```
+
+[function signature](https://developer.mozilla.org/en-US/docs/Glossary/Signature/Function) ：定義 function 或 methods 的 input 和 output 
+
+signature 包含
+
+* parameters and their types
+* a return value and type
+* exceptions that might be thrown or passed back
+* information about the availability of the method in an object-oriented program (such as the keywords public, static, or prototype).
+
+下面的程式碼在 React >= 18 會報錯，< 17 不會
+
+```typescript
+// @ts-expect-error Parameter 'e' implicitly has 'any' type.
+useCallback((e) => {}, []);
+// Explicit 'any' type.
+useCallback((e: any) => {}, []);
+
+```
+
+### useReducer
+
+使用 [Discriminated Unions](https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes-func.html#discriminated-unions) 定義 reducer actions，
+不要忘記定義 reducer 的 return 型別，否則 TS 會自動推斷他的行別
+
+```typescript
+import { useReducer } from "react";
+
+const initialState = { count: 0 };
+
+type ACTIONTYPE =
+  | { type: "increment"; payload: number }
+  | { type: "decrement"; payload: string };
+
+function reducer(state: typeof initialState, action: ACTIONTYPE) {
+  switch (action.type) {
+    case "increment":
+      return { count: state.count + action.payload };
+    case "decrement":
+      return { count: state.count - Number(action.payload) };
+    default:
+      throw new Error();
+  }
+}
+
+function Counter() {
+  const [state, dispatch] = useReducer(reducer, initialState);
+  return (
+    <>
+      Count: {state.count}
+      <button onClick={() => dispatch({ type: "decrement", payload: "5" })}>
+        -
+      </button>
+      <button onClick={() => dispatch({ type: "increment", payload: 5 })}>
+        +
+      </button>
+    </>
+  );
+}
+
+```
+
+[參考範例](https://www.typescriptlang.org/play?#code/LAKFEsFsAcHsCcAuACAVMghgZ2QJQKYYDGKAZvLJMgOTyEnUDcooRsAdliuO+IuBgA2AZUQZE+ZAF5kAbzYBXdogBcyAAwBfZmBCIAntEkBBAMIAVAJIB5AHLmAmgAUAotOShkyAD5zkBozVqHiI6SHxlagAaZGgMfUFYDAATNXYFSAAjfHhNDxAvX1l-Q3wg5PxQ-HDImLiEpNTkLngeAHM8ll1SJRJwDmQ6ZIUiHIAKLnEykqNYUmQePgERMQkY4n4ONTMrO0dXAEo5T2aAdz4iAAtkMY3+9gA6APwj2ROvImxJYPYqmsRqCp3l5BvhEAp4Ow5IplGpJhIHjCUABqTB9DgPeqJFLaYGfLDfCp-CIAoEFEFeOjgyHQ2BKVTNVb4RF05TIAC0yFsGWy8Fu6MeWMaB1x5K8FVIGAUglUwK8iEuFFOyHY+GVLngFD5Bx0Xk0oH13V6myhplZEm1x3JbE4KAA2vD8DFkuAsHFEFcALruAgbB4KAkEYajPlDEY5GKLfhCURTHUnKkQqFjYEAHgAfHLkGb6WpZI6WfTDRSvKnMgpEIgBhxTIJwEQANZSWRjI5SdPIF1u8RXMayZ7lSphEnRWLxbFNagAVmomhF6fZqYA9OXKxxM2KQWWK1WoTW643m63pB2u+7e-3SkEQsPamOGik1FO55p08jl6vdxuKcvv8h4yAmhAA)
+
+
+### 使用 redux 的 Reducer
+
+如果你使用 redux 撰寫 reducer function ，redux  會提供一個 ``` Reducer<AppState, Action> ``` 格式，它會幫你處理回傳的型別
+
+上面的列子會就變成下面的範例
+ 
+```typescript
+import { Reducer } from 'redux';
+
+export function reducer: Reducer<AppState, Action>() {}
+
+```
+
+## useEffect / useLayoutEffect
+
+``` useEffect ``` and ``` useLayoutEffect ``` 都是用在 side effects 並且 return 可選的 cleanup function。
+這表示假設他們不回傳任何型別，就沒有必要寫型別。
+使用 useEffect 要注意，不要 return  function  或者 undefined 以外的內容，否則  TS 和 React 都會報錯。
+當使用 arrow function 以下是一個很微妙的例子
+
+```typescript
+function DelayedEffect(props: { timerMs: number }) {
+  const { timerMs } = props;
+
+  useEffect(
+    () =>
+      setTimeout(() => {
+        /* do stuff */
+      }, timerMs),
+    [timerMs]
+  );
+  // bad example! setTimeout implicitly returns a number
+  // 不好的範例，setTimeout 隱含的回傳一個  number
+  // because the arrow function body isn't wrapped in curly braces
+  // 因為 useEffect 的 arrow function 沒有使用大括號
+  return null;
+}
+
+// 以下修正上面的範例
+
+function DelayedEffect(props: { timerMs: number }) {
+  const { timerMs } = props;
+
+  useEffect(() => {
+    setTimeout(() => {
+      /* do stuff */
+    }, timerMs);
+  }, [timerMs]);
+  // better; use the void keyword to make sure you return undefined
+  // 更好的方式，使用 void keyword 去確保 return undefined
+  return null;
+}
+
+```
+
 https://react-typescript-cheatsheet.netlify.app/docs/basic/getting-started/hooks/
