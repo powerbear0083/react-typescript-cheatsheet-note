@@ -490,4 +490,44 @@ function DelayedEffect(props: { timerMs: number }) {
 
 ```
 
+## useRef
+
+在 TS 中 useRef return 一個 read-only or 可變 (mutable)的參考 (reference)，
+這個取決於你的參數類型是否完全覆蓋初始值，選擇一個合適的來使用。(看無 QQ)
+(意思是 useRef 的型別是看一開始你設定值是 ready-only( DOM element id ?) or mutable ( 滾動窗的元素 ?)
+
+### DOM element ref
+
+為了存取 DOM 元素：只提供元素類型作參數，並使用 null 作為初始值，在這種情況下，React 的 .current 回傳的參考就是一個 ready-only。
+這種使用方法，TS 會以為你會將 ref 使用在 element 上面
+
+```typescript
+function Foo() {
+  // - If possible, prefer as specific as possible. For example, HTMLDivElement
+  // - is better than HTMLElement and way better than Element.
+  // - Technical-wise, this returns RefObject<HTMLDivElement>
+  // - 如果可以，盡可能的把 useRef 的元素寫清楚
+  // - 如：HTMLDviElement 會比  HTMLElement 好，而且也比 Element 好
+  // - 技術方面，這會回傳 RefObject<HTMLDivElement>
+  const divRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    // Note that ref.current may be null. This is expected, because you may
+    // conditionally render the ref-ed element, or you may forgot to assign it
+    // 注意， ref.current 可能是空的，這是可以預期的，因為你在 render 的時候去判斷
+    // 元素要不要渲染，或者你忘記 assign
+    if (!divRef.current) throw Error("divRef is not assigned");
+
+    // Now divRef.current is sure to be HTMLDivElement
+    // 這時候 divRef.current 是 HTMLDivElement
+    doSomethingWith(divRef.current);
+  });
+
+  // Give the ref to an element so React can manage it for you
+  // 給 ref 一個元素，React 就會取得 div 這個元素
+  return <div ref={divRef}>etc</div>;
+}
+
+```
+
 https://react-typescript-cheatsheet.netlify.app/docs/basic/getting-started/hooks/
