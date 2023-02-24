@@ -530,4 +530,26 @@ function Foo() {
 
 ```
 
-https://react-typescript-cheatsheet.netlify.app/docs/basic/getting-started/hooks/
+如果你可以保證 divRef 永遠不會是 null，也可以把  if (!divRef.current) 拿掉
+修改後的範例如下
+
+```typescript
+const divRef = useRef<HTMLDivElement>(null!);
+// Later... No need to check if it is null
+// 之後就不需要判斷 divRef.current 是否存在
+doSomethingWith(divRef.current);
+
+```
+
+注意，如果你忘記把 ref assign 給頁面的 element ，你會在 runtime 的時候遇到錯誤
+
+#### TIP 使用那個 HTML Element
+
+Refs 的需要特殊性，下面的範例 inputEl 單純把型別設為 HTMLElement 是不夠的
+這樣會發生 intentionally type error ，如果你不知道 element type 可以(查這裡) [https://github.com/microsoft/TypeScript/blob/v3.9.5/lib/lib.dom.d.ts#L19224-L19343]
+
+```typescript
+  const inputEl = React.useRef<HTMLElement>(null);
+  <input ref={inputEl} />
+
+```
