@@ -543,7 +543,7 @@ doSomethingWith(divRef.current);
 
 注意，如果你忘記把 ref assign 給頁面的 element ，你會在 runtime 的時候遇到錯誤
 
-#### TIP 使用那個 HTML Element
+#### TIP 使用何種 HTML Element
 
 Refs 的需要特殊性，下面的範例 inputEl 單純把型別設為 HTMLElement 是不夠的
 這樣會發生 intentionally type error ，如果你不知道 element type 可以(查這裡) [https://github.com/microsoft/TypeScript/blob/v3.9.5/lib/lib.dom.d.ts#L19224-L19343]
@@ -553,3 +553,90 @@ Refs 的需要特殊性，下面的範例 inputEl 單純把型別設為 HTMLElem
   <input ref={inputEl} />
 
 ```
+
+
+### 可變的 (Mutable value) ref
+
+[一個可變的值](https://reactjs.org/docs/hooks-faq.html#is-there-something-like-instance-variables)： 提供你想要的型別，並且確保初始值完全屬於該類型
+
+```typescript
+
+function Foo() {
+  // Technical-wise, this returns MutableRefObject<number | null>
+  // 技術上來說，這會回傳一個 MutableRefObject
+  const intervalRef = useRef<number | null>(null);
+
+  // You manage the ref yourself (that's why it's called MutableRefObject!)
+  // 你可以自己管理控制 (所以才會叫做 MutableRefObject )
+  useEffect(() => {
+    intervalRef.current = setInterval(...);
+    return () => clearInterval(intervalRef.current);
+  }, []);
+
+  // The ref is not passed to any element's "ref" prop
+  // 這個 ref 不會給 element 傳任何 ref 的 prop
+  return <button onClick={/* clearInterval the ref */}>Cancel timer</button>;
+}
+
+```
+
+### 看看其他討論
+
+[Related issue by @rajivpunjabi ](https://github.com/typescript-cheatsheets/react/issues/388)
+[Example from Stefan Baumgartner  ](https://fettblog.eu/typescript-react/hooks/#useref)
+
+
+## (useImperativeHandle) [https://beta.reactjs.org/reference/react/useImperativeHandle]
+
+這個答案來自 (Stackoverflow)[https://stackoverflow.com/questions/62210286/declare-type-with-react-useimperativehandle/69292925#69292925]
+
+```typescript
+
+// Countdown.tsx
+
+// Define the handle types which will be passed to the forwardRef
+// 定義一個事件型別給 forwardRef
+export type CountdownHandle = {
+  start: () => void;
+};
+
+type CountdownProps = {};
+
+const Countdown = forwardRef<CountdownHandle, CountdownProps>((props, ref) => {
+  useImperativeHandle(ref, () => ({
+    // start() has type inference here
+    // start() 型別 inference 在這裡
+    start() {
+      alert("Start");
+    },
+  }));
+
+  return <div>Countdown</div>;
+});
+
+// The component uses the Countdown component
+// 使用 Countdown component 的原件
+
+import Countdown, { CountdownHandle } from "./Countdown.tsx";
+
+function App() {
+  const countdownEl = useRef<CountdownHandle>(null);
+
+  useEffect(() => {
+    if (countdownEl.current) {
+      // start() has type inference here as well
+      // start() 的型別 inference 也在這裡
+      countdownEl.current.start();
+    }
+  }, []);
+
+  return <Countdown ref={countdownEl} />;
+}
+
+
+```
+
+### 看看其他討論
+
+
+[Using ForwardRefRenderFunction](https://stackoverflow.com/questions/62210286/declare-type-with-react-useimperativehandle/62258685#62258685)
