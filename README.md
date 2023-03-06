@@ -640,3 +640,29 @@ function App() {
 
 
 [Using ForwardRefRenderFunction](https://stackoverflow.com/questions/62210286/declare-type-with-react-useimperativehandle/62258685#62258685)
+
+## Custom Hooks
+
+如果你在自定義的 Hooks return 一個 Array ，你會希望避免型別的推斷，因為 TS 會將它定義為 union type (當你希望 array 內容每個都有自己的型別)
+可以使用 [TS 3.4 const assertions](https://devblogs.microsoft.com/typescript/announcing-typescript-3-4/#const-assertions)
+
+```typescript
+
+import { useState } from "react";
+
+export function useLoading() {
+  const [isLoading, setState] = useState(false);
+  const load = (aPromise: Promise<any>) => {
+    setState(true);
+    return aPromise.finally(() => setState(false));
+  };
+  // infers [boolean, typeof load] instead of (boolean | typeof load)[]
+  // 使用 as const 型別會是  [boolean, typeof load] 而不是 (boolean | typeof load)[]
+  return [isLoading, load] as const;
+}
+
+```
+
+(在 TS Playground 查看)[https://www.typescriptlang.org/play?target=5#code/JYWwDg9gTgLgBAJQKYEMDG8BmUIjgcilQ3wFgAoCpAD0ljkwFcA7DYCZuRgZyQBkIKACbBmAcwAUASjgBvCnDhoO3eAG1g3AcNFiANHF4wAyjBQwkAXTgBeRMRgA6HklPmkEzCgA2vKQG4FJRV4b0EhWzgJFAAFHBBNJAAuODjcRIAeFGYATwA+GRs8uSDFIzcLCRgoRiQA0rgiGEYoTlj4xMdMUR9vHIlpW2Lys0qvXzr68kUAX0DpxqRm1rgNLXDdAzDhaxRuYOZVfzgAehO4UUwkKH21ACMICG9UZgMYHLAkCEw4baFrUSqVARb5RB5PF5wAA+cHen1BfykaksFBmQA]
+
+這個方法，當你在解構的時候，可以得到正確的 type
