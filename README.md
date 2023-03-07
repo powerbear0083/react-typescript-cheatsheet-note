@@ -217,7 +217,7 @@ const App: React.FunctionComponent<{ message: string }> = ({ message }) => (
   * 在使用 defaultProps 會有一些問題，這邊有[更多詳細的討論](https://github.com/typescript-cheatsheets/react/issues/87)
 * 在 React 18 版之前 ，React.FunctionComponent 為 children 提供一個不明確的型別定義，看以下範例；這樣引起了很激烈的討論，所以之後 React.FC 就被[ Create React App TypeScript template ](https://github.com/facebook/create-react-app/pull/8177) 移掉了。
 
-#### (以廢棄) 使用 React.VoidFunctionComponent or React.VFC
+#### (已廢棄) 使用 React.VoidFunctionComponent or React.VFC
 
 在 types/react 16.9.48 增加了 React.VoidFunctionComponent or React.VFC 為了可以明確幫 children 定義型別，但是在 React18 這兩種用法確被廢棄了，所以在 React 18+ 以上
 都不推薦這兩種寫法。
@@ -665,4 +665,79 @@ export function useLoading() {
 
 (在 TS Playground 查看)[https://www.typescriptlang.org/play?target=5#code/JYWwDg9gTgLgBAJQKYEMDG8BmUIjgcilQ3wFgAoCpAD0ljkwFcA7DYCZuRgZyQBkIKACbBmAcwAUASjgBvCnDhoO3eAG1g3AcNFiANHF4wAyjBQwkAXTgBeRMRgA6HklPmkEzCgA2vKQG4FJRV4b0EhWzgJFAAFHBBNJAAuODjcRIAeFGYATwA+GRs8uSDFIzcLCRgoRiQA0rgiGEYoTlj4xMdMUR9vHIlpW2Lys0qvXzr68kUAX0DpxqRm1rgNLXDdAzDhaxRuYOZVfzgAehO4UUwkKH21ACMICG9UZgMYHLAkCEw4baFrUSqVARb5RB5PF5wAA+cHen1BfykaksFBmQA]
 
-這個方法，當你在解構的時候，可以得到正確的 type
+使用上述這個方法，當你在解構的時候，可以得到正確的 type
+
+https://react-typescript-cheatsheet.netlify.app/docs/basic/getting-started/hooks/
+
+#### 替代 tuple type 的型別
+
+如果你有 const assertions 的麻煩，你也可以重新宣告或定義新的型別
+
+
+```typescript
+
+import { useState } from "react";
+
+export function useLoading() {
+  const [isLoading, setState] = useState(false);
+  const load = (aPromise: Promise<any>) => {
+    setState(true);
+    return aPromise.finally(() => setState(false));
+  };
+  return [isLoading, load] as [
+    boolean,
+    (aPromise: Promise<any>) => Promise<any>
+  ];
+}
+
+```
+
+如果有寫很多自訂義 Hooks ，自動帶入 tuples helper function 也很有用
+
+
+```typescript
+
+function tuplify<T extends any[]>(...elements: T) {
+  return elements;
+}
+
+function useArray() {
+  const numberValue = useRef(3).current;
+  const functionValue = useRef(() => {}).current;
+  return [numberValue, functionValue]; // type is (number | (() => void))[]
+}
+
+function useTuple() {
+  const numberValue = useRef(3).current;
+  const functionValue = useRef(() => {}).current;
+  return tuplify(numberValue, functionValue); // type is [number, () => void]
+}
+
+```
+React 團對建議，return 超過兩個值以上請適當適用 object 取代 tuples
+
+### More Hooks + TypeScript reading
+
+* (https://medium.com/@jrwebdev/react-hooks-in-typescript-88fce7001d0d)[https://medium.com/@jrwebdev/react-hooks-in-typescript-88fce7001d0d]  
+* (https://fettblog.eu/typescript-react/hooks/#useref)[https://fettblog.eu/typescript-react/hooks/#useref]  
+
+如果你有寫 React Hooks library ，不要忘了你應該把 type 曝露出來給使用者使用
+
+### Example React Hooks + TypeScript Libraries
+
+* (https://github.com/mweststrate/use-st8)[https://github.com/mweststrate/use-st8]
+* (https://github.com/palmerhq/the-platform)[https://github.com/palmerhq/the-platform]
+* (https://github.com/sw-yx/hooks)[https://github.com/sw-yx/hooks]
+
+
+## Class Components
+https://react-typescript-cheatsheet.netlify.app/docs/basic/getting-started/class_components
+
+## Typing defaultProps
+
+
+### 你可能會需要 defaultProps
+
+根據這個 (tweet)[https://twitter.com/dan_abramov/status/1133878326358171650] 最終可能會被棄用，可以查看下面的討論
+
+* https://react-typescript-cheatsheet.netlify.app/docs/basic/getting-started/default_props#you-may-not-need-defaultprops
