@@ -738,6 +738,127 @@ https://react-typescript-cheatsheet.netlify.app/docs/basic/getting-started/class
 
 ### 你可能會需要 defaultProps
 
-根據這個 (tweet)[https://twitter.com/dan_abramov/status/1133878326358171650] 最終可能會被棄用，可以查看下面的討論
+根據這個 (tweet)[https://twitter.com/dan_abramov/status/1133878326358171650]討論，defaultProps 最終可能會被棄用，可以查看下面的討論
 
-* https://react-typescript-cheatsheet.netlify.app/docs/basic/getting-started/default_props#you-may-not-need-defaultprops
+* (Original tweet)[https://twitter.com/hswolff/status/1133759319571345408]
+* (More info can also be found in this article)[https://medium.com/@matanbobi/react-defaultprops-is-dying-whos-the-contender-443c19d9e7f1]
+
+會有這種事情的發生，是因為大家都會使用 object 的預設參數
+
+#### Function Components
+
+```typescript
+
+type GreetProps = { age?: number };
+
+const Greet = ({ age = 21 }: GreetProps) => // etc
+```
+
+#### Class Components
+
+```typescript
+
+type GreetProps = {
+  age?: number;
+};
+
+class Greet extends React.Component<GreetProps> {
+  render() {
+    const { age = 21 } = this.props;
+    /*...*/
+  }
+}
+
+let el = <Greet age={3} />;
+```
+
+### Typing defaultProps
+
+TS 在 3.0+ defaultProps 型別推斷 (inference) 有很大的進步，(但還是有些問題)[https://github.com/typescript-cheatsheets/react/issues/61]
+
+#### Function Components
+
+```typescript
+
+// using typeof as a shortcut; note that it hoists!
+// 使用 typeof 的偷懶方法；注意他會提升
+// you can also declare the type of DefaultProps if you choose
+// 也可以宣告 defaultProps 的 type
+// e.g. https://github.com/typescript-cheatsheets/react/issues/415#issuecomment-841223219
+type GreetProps = { age: number } & typeof defaultProps;
+
+const defaultProps = {
+  age: 21,
+};
+
+const Greet = (props: GreetProps) => {
+  // etc
+};
+Greet.defaultProps = defaultProps;
+```
+
+(See this in TS Playground)[https://www.typescriptlang.org/play?#code/JYWwDg9gTgLgBAKjgQwM5wEoFNkGN4BmUEIcARFDvmQNwBQdMAnmFnAOKVYwAKxY6ALxwA3igDmWAFxwAdgFcQAIyxQ4AXzgAyOM1YQCcACZYCyeQBte-VPVwRZqeCbOXrEAXGEi6cCdLgAJgBGABo6dXo6e0d4TixuLzgACjAbGXjuPg9UAEovAD5RXzhKGHkoWTgAHiNgADcCkTScgDpkSTgAeiQFZVVELvVqrrrGiPpMmFaXcytsz2FZtwXbOiA]
+
+https://react-typescript-cheatsheet.netlify.app/docs/basic/getting-started/default_props
+
+對於 Class components 來說，(有幾種方法可宣告)[https://github.com/typescript-cheatsheets/react/pull/103#issuecomment-481061483] type，包括使用 Pick utility type ，
+但是還是推薦 "反轉" props 
+
+```typescript
+
+type GreetProps = typeof Greet.defaultProps & {
+  age: number;
+};
+
+class Greet extends React.Component<GreetProps> {
+  static defaultProps = {
+    age: 21,
+  };
+  /*...*/
+}
+
+// Type-checks! No type assertions needed!
+// 型別檢查，不需要 type assertions
+let el = <Greet age={3} />;
+```
+
+##### 和 JSX.LibraryManagedAttributes 作者細微差別
+
+上面所講的對一般開發 APP 來說很棒，但是有時候你會想把定義好的 props export 出去，方便其他人可以使用。
+這裡會有一個問題 GreetProps 的 age 是必填的，但是對於 defaultProps 來說不是。
+
+這裡有一個需要注意的地方，(GreetProps 是內部的元件的 props 而不是開放給外部用的)[https://github.com/typescript-cheatsheets/react/issues/66#issuecomment-453878710]，你可以分別建立給外部用的 type 
+或者是可以使用外部 JSX.LibraryManagedAttributes 第三方套件
+
+
+```typescript
+
+// internal contract, should not be exported out
+// 外部使用的 type ，不應該 exported
+type GreetProps = {
+  age: number;
+};
+
+class Greet extends Component<GreetProps> {
+  static defaultProps = { age: 21 };
+}
+
+// external contract
+// 外部使用 type
+export type ApparentGreetProps = JSX.LibraryManagedAttributes<
+  typeof Greet,
+  GreetProps
+>;
+
+```
+
+這樣 type 會正常 work，但如果把滑鼠游標停在 ApparentGreetProps 上面會蠻嚇人的，
+可以使用 ComponentProps 這個樣板功能
+
+#### Consuming Props of a Component with defaultProps
+
+元件有 defaultProps 可以看出哪些是必填項目，但實際上並沒有這樣
+
+##### Problem Statement
+
+https://react-typescript-cheatsheet.netlify.app/docs/basic/getting-started/default_props/
