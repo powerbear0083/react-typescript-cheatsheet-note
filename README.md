@@ -861,4 +861,76 @@ export type ApparentGreetProps = JSX.LibraryManagedAttributes<
 
 ##### Problem Statement
 
-https://react-typescript-cheatsheet.netlify.app/docs/basic/getting-started/default_props/
+底下是你想要做的
+
+```typescript
+
+interface IProps {
+  name: string;
+}
+const defaultProps = {
+  age: 25,
+};
+const GreetComponent = ({ name, age }: IProps & typeof defaultProps) => (
+  <div>{`Hello, my name is ${name}, ${age}`}</div>
+);
+GreetComponent.defaultProps = defaultProps;
+
+const TestComponent = (props: React.ComponentProps<typeof GreetComponent>) => {
+  return <h1 />;
+};
+
+// Property 'age' is missing in type '{ name: string; }' but required in type '{ age: number; }'
+// Property 在 IProps 缺少 'age' type ，但是在 defaultProps 是必填
+const el = <TestComponent name="foo" />;
+
+```
+
+##### Solution
+
+使用 JSX.LibraryManagedAttributes 定義一個適用的 utility 
+
+```typescript
+
+type ComponentProps<T> = T extends | React.ComponentType<infer P> | React.Component<infer P>
+  ? JSX.LibraryManagedAttributes<T, P>
+  : never;
+
+const TestComponent = (props: ComponentProps<typeof GreetComponent>) => {
+  return <h1 />;
+};
+
+// No error
+const el = <TestComponent name="foo" />;
+
+```
+
+#### Misc Discussions and Knowledge 其他討論與知識
+
+##### 為什麼 React.FC 破壞 defaultProps
+
+可以查看底下的討論
+
+* [https://medium.com/@martin_hotell/10-typescript-pro-tips-patterns-with-or-without-react-5799488d6680](https://medium.com/@martin_hotell/10-typescript-pro-tips-patterns-with-or-without-react-5799488d6680)
+* [https://github.com/DefinitelyTyped/DefinitelyTyped/issues/30695](https://github.com/DefinitelyTyped/DefinitelyTyped/issues/30695)
+* [https://github.com/typescript-cheatsheets/react/issues/87](https://github.com/typescript-cheatsheets/react/issues/87)
+
+
+##### Typescript2.9 和更早版本
+
+在 TS2.9 或更早的版本，有更多方法可以做到，但是底下是我們見過最好的建議的做法
+
+
+```typescript
+
+type Props = Required<typeof MyComponent.defaultProps> & {
+  /* additional props here */
+};
+
+export class MyComponent extends React.Component<Props> {
+  static defaultProps = {
+    foo: "foo",
+  };
+}
+
+```
