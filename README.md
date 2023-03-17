@@ -934,3 +934,24 @@ export class MyComponent extends React.Component<Props> {
 }
 
 ```
+
+我們之前推薦 TS 的 Partial type 的功能，
+意思使當前的 interface 可以使用 Partial 的功能包住當前的 interface，
+透過這樣的方法，可以擴展 defaultProps，這樣就不用改變任何 types
+
+```typescript
+
+interface IMyComponentProps {
+  firstProp?: string;
+  secondProp: IPerson[];
+}
+
+export class MyComponent extends React.Component<IMyComponentProps> {
+  public static defaultProps: Partial<IMyComponentProps> = {
+    firstProp: "default",
+  };
+}
+
+```
+
+https://react-typescript-cheatsheet.netlify.app/docs/basic/getting-started/default_props/
