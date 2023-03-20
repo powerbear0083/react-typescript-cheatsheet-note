@@ -953,5 +953,55 @@ export class MyComponent extends React.Component<IMyComponentProps> {
 }
 
 ```
+使用上面這種方法，在使用 JSX.LibraryManagedAttributes 這個套件的時候，會有問題。
+基本原因在於，當建立 JSX 的時候 compiler 會把 defaultProps 視為選填的。
+
 
 https://react-typescript-cheatsheet.netlify.app/docs/basic/getting-started/default_props/
+
+## Forms and Events
+
+如果效能不是問題，那 inlining handler function 是一個比較簡單的作法，因為可以使用 (type inference and contextual typing)[https://www.typescriptlang.org/docs/handbook/type-inference.html#contextual-typing]
+
+```typescript
+
+const el = (
+  <button
+    onClick={(event) => {
+      /* event will be correctly typed automatically! */
+    }}
+  />
+);
+
+```
+
+但是如果你需要把單獨把 event handler 抽出去，IDE 工具會幫忙，因為 @type 定義有很多種類型。
+輸入你要找的內容，通常都會自動完成。
+下面是 onChange 的例子
+
+```typescript 
+
+type State = {
+  text: string;
+};
+class App extends React.Component<Props, State> {
+  state = {
+    text: "",
+  };
+
+  // typing on RIGHT hand side of =
+  onChange = (e: React.FormEvent<HTMLInputElement>): void => {
+    this.setState({ text: e.currentTarget.value });
+  };
+  render() {
+    return (
+      <div>
+        <input type="text" value={this.state.text} onChange={this.onChange} />
+      </div>
+    );
+  }
+}
+
+```
+
+https://react-typescript-cheatsheet.netlify.app/docs/basic/getting-started/forms_and_events
