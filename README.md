@@ -1004,4 +1004,24 @@ class App extends React.Component<Props, State> {
 
 ```
 
-https://react-typescript-cheatsheet.netlify.app/docs/basic/getting-started/forms_and_events
+(View in the TypeScript Playground)[https://www.typescriptlang.org/play?#code/JYWwDg9gTgLgBAJQKYEMDG8BmUIjgcilQ3wFgAoCtAGxQGc64BBMMOJADxiQDsATRsnQwAdAGFckHrxgAeCnDgBvAL4AaBcs2KA9Drg8IcMDjB1tcblwBccOjCjAeAcwDcmlRQB8W8ovso3HAAvL6KilYwtgBE0R7ulH5wepYAnmBOznAQPIgAkgDiABIAKnAAFij8dsB8SNmYIZo5YpUu9aEAFEi2QhgiAGLQIACiAG4ysqUAsgAyeTxgAK4wI9RIIDJeAJS2YxC1IT5KFjDlwHQidEgwAMowgUidSpacUewiaEtQRDwwJSgoM4biIxihqEt6iptglFCpYXBfnUoJ1tmFwkQYN9cp0LIpZHxgGMvHjwrInMt4DB0khgtFItE4GCIbSlGcLlcHtwRJEVNkeK0qsDgmzzpcWm1gXydCSkuE4LIdITiRYYR4KCogA]
+
+除了使用 React.FormEvent 和 Void 去輸入參數和 return value ，也可以將 type 類型用於 event handler
+
+```typescript 
+
+  // typing on LEFT hand side of =
+  onChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
+    this.setState({text: e.currentTarget.value})
+  }
+
+```
+
+### 為什麼這兩種方法做同樣的事情
+
+第一種方法使用 inferred method signature (e: React.FormEvent<HTMLInputElement>): void)
+第二種方法使用強制執行 @type/react 提供的類型
+React.ChangeEventHandler<> 只是 @type/react 提供的一個比較簡單的方法，你可以將這兩種想成有更多種型別推段的方法
+但是無論是那種模式，都是很好的模式 (. See our Github PR for more.)[https://github.com/typescript-cheatsheets/react/pull/24]
+
+https://react-typescript-cheatsheet.netlify.app/docs/basic/getting-started/forms_and_events/
