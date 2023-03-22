@@ -1024,4 +1024,49 @@ class App extends React.Component<Props, State> {
 React.ChangeEventHandler<> 只是 @type/react 提供的一個比較簡單的方法，你可以將這兩種想成有更多種型別推段的方法
 但是無論是那種模式，都是很好的模式 (. See our Github PR for more.)[https://github.com/typescript-cheatsheets/react/pull/24]
 
+在表單中使用不受控元件輸入 onSubmit
+
+如果你不太關心事件的類型，你可以使用 React.SyntheticEvent 
+如果你的目標表單有你自己想要存取的自定義 input 可以使用 type assertion
+
+```typescript 
+
+<form
+  ref={formRef}
+  onSubmit={(e: React.SyntheticEvent) => {
+    e.preventDefault();
+    const target = e.target as typeof e.target & {
+      email: { value: string };
+      password: { value: string };
+    };
+    const email = target.email.value; // typechecks!
+    const password = target.password.value; // typechecks!
+    // etc...
+  }}
+>
+  <div>
+    <label>
+      Email:
+      <input type="email" name="email" />
+    </label>
+  </div>
+  <div>
+    <label>
+      Password:
+      <input type="password" name="password" />
+    </label>
+  </div>
+  <div>
+    <input type="submit" value="Log in" />
+  </div>
+</form>
+
+```
+
+(View in the TypeScript Playground)[https://www.typescriptlang.org/play?#code/JYWwD]
+
+
+當然，如果你任何重要的表單，你應該使用 (formik)[https://formik.org/] or (Reach Hook Form)[https://react-hook-form.com/]
+他們都是使用 TS 撰寫的第三方套件
+
 https://react-typescript-cheatsheet.netlify.app/docs/basic/getting-started/forms_and_events/
