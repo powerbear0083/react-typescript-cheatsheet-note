@@ -1070,3 +1070,10 @@ React.ChangeEventHandler<> 只是 @type/react 提供的一個比較簡單的方�
 他們都是使用 TS 撰寫的第三方套件
 
 https://react-typescript-cheatsheet.netlify.app/docs/basic/getting-started/forms_and_events/
+
+## List of event type
+
+| Event Type           | Description
+| -------------------- | ----------
+| AnimationEvent       | CSS Animations.
+| ChangeEvent          | input, textarea, select 元入的 change 事件
