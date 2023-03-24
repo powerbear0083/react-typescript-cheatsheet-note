@@ -1077,3 +1077,12 @@ https://react-typescript-cheatsheet.netlify.app/docs/basic/getting-started/forms
 | -------------------- | ----------
 | AnimationEvent       | CSS Animations.
 | ChangeEvent          | input, textarea, select 元入的 change 事件
+| ClipboardEvent       | copy, cut, paste 事件
+| CompositionEvent     | event 發生於使用者間接地輸入文字 ( 如：瀏覽器跳出 popup ，需要使用者輸入文字)
+| DragEvent            | 拖拉事件 (如：滑鼠拖拉)
+| FocusEvent           | 事件觸發於當元素取得或失去 focus
+| FormEvent            | 事件觸發於 form 取得或失去，或者當表單的值改變或者 submitted
+| InvalidEvent         | 當一個 input type 有一個限制值，如果輸入的值不符合限制，就會觸發 invalid event ( e.g <input type="number" max="10"> )
+| KeyboardEvent        | 使用者使用鍵盤觸發的事件，每一個 event 描述都有單一的 key 
+ 
+ https://react-typescript-cheatsheet.netlify.app/docs/basic/getting-started/forms_and_events/
