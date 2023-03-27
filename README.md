@@ -1083,6 +1083,14 @@ https://react-typescript-cheatsheet.netlify.app/docs/basic/getting-started/forms
 | FocusEvent           | 事件觸發於當元素取得或失去 focus
 | FormEvent            | 事件觸發於 form 取得或失去，或者當表單的值改變或者 submitted
 | InvalidEvent         | 當一個 input type 有一個限制值，如果輸入的值不符合限制，就會觸發 invalid event ( e.g <input type="number" max="10"> )
-| KeyboardEvent        | 使用者使用鍵盤觸發的事件，每一個 event 描述都有單一的 key 
+| KeyboardEvent        | 使用者使用鍵盤觸發的事件，每一個 event 描述都有單一的 key interaction
+| MouseEvent           | 事件發生在使用者點擊裝置時發生 (e.g. mouse)
+| PointerEvent         | 事件發生在使用者點與裝置互動時發生，如：滑鼠、觸控螢幕、觸控板；觸控螢幕還支援多點觸控。 除法你是針對就瀏覽器開發 (IE10 or Safari 12)，一般建議使用 PointerEvent。Extends UIEvent.
+| TouchEvent           | 事件發生在使用者觸控裝置時發生。Extends UIEvent.
+| TransitionEvent      | CSS Transitions. 沒有全部瀏覽器都支援。Extends UIEvent.
+| UIEvent              | 滑鼠、觸控、Pointer 的基本事件
+| WheelEvent           | 滑鼠滾輪事件，類似輸入設備。(注意：不要跟 scroll event 混淆了)
+| SyntheticEvent       | 上述 event 的基礎 event ，不確定 event 的類型時使用
+
+
  
- https://react-typescript-cheatsheet.netlify.app/docs/basic/getting-started/forms_and_events/
