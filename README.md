@@ -164,8 +164,10 @@ type MyType = TypeA | TypeB
 https://react-typescript-cheatsheet.netlify.app/docs/basic/getting-started/basic_type_example/
 
 ### mapped types
+
 https://www.typescriptlang.org/docs/handbook/2/mapped-types.html
 
+---
 
 ## Function Components
 
@@ -288,6 +290,8 @@ Array.fill 會回傳一個陣列，這種寫法 TS 無法編譯，如果需要�
 const MyArrayComponent = () => Array(5).fill(<div />) as any as JSX.Element;
 
 ```
+
+---
 
 ## Hooks
 
@@ -729,9 +733,13 @@ React 團對建議，return 超過兩個值以上請適當適用 object 取代 t
 * (https://github.com/palmerhq/the-platform)[https://github.com/palmerhq/the-platform]
 * (https://github.com/sw-yx/hooks)[https://github.com/sw-yx/hooks]
 
+---
 
 ## Class Components
 https://react-typescript-cheatsheet.netlify.app/docs/basic/getting-started/class_components
+
+
+---
 
 ## Typing defaultProps
 
@@ -959,6 +967,8 @@ export class MyComponent extends React.Component<IMyComponentProps> {
 
 https://react-typescript-cheatsheet.netlify.app/docs/basic/getting-started/default_props/
 
+--- 
+
 ## Forms and Events
 
 如果效能不是問題，那 inlining handler function 是一個比較簡單的作法，因為可以使用 (type inference and contextual typing)[https://www.typescriptlang.org/docs/handbook/type-inference.html#contextual-typing]
@@ -1094,3 +1104,36 @@ https://react-typescript-cheatsheet.netlify.app/docs/basic/getting-started/forms
 
 
  
+### 關於  inputEvent
+
+你可能注意到了，上面都沒有 inputEvent 。
+這是 TS 不支援 inputEvent，因為 inputEvent 本身就沒有完全支援瀏覽器，而且在其他的瀏覽器可能有會有不同的行為。
+可以使用 KeyboardEvent 來取代 inputEvent
+
+Sources
+
+* https://github.com/microsoft/TypeScript/issues/29441
+* https://developer.mozilla.org/en-US/docs/Web/API/InputEvent
+* https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/input_event
+
+
+---
+
+## Context
+
+### Basic Example
+
+
+這是一個建立切換 theme 的範例
+
+```typescript
+
+import { createContext } from "react";
+
+type ThemeContextType = "light" | "dark";
+
+const ThemeContext = createContext<ThemeContextType>("light");
+
+```
+
+https://react-typescript-cheatsheet.netlify.app/docs/basic/getting-started/context
