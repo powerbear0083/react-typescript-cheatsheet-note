@@ -1136,4 +1136,80 @@ const ThemeContext = createContext<ThemeContextType>("light");
 
 ```
 
-https://react-typescript-cheatsheet.netlify.app/docs/basic/getting-started/context
+context 需要一個 provider 把子元件包起來，這樣子元件才能使用 context
+
+```typescript
+
+import { useState } from "react";
+
+const App = () => {
+  const [theme, setTheme] = useState<ThemeContextType>("light");
+
+  return (
+    <ThemeContext.Provider value={theme}>
+      <MyComponent />
+    </ThemeContext.Provider>
+  );
+};
+
+```
+
+調用 useContext 來訂閱取得 context 的值
+
+```typescript
+
+import { useContext } from "react";
+
+const MyComponent = () => {
+  const theme = useContext(ThemeContext);
+
+  return <p>The current theme is {theme}.</p>;
+};
+
+```
+
+### 沒有預設的 context value
+
+如果你沒有任何的有意義的預設於，請把預設值設為 null
+
+```typescript
+
+import { createContext } from "react";
+
+interface CurrentUserContextType {
+  username: string;
+}
+
+const CurrentUserContext = createContext<CurrentUserContextType | null>(null);
+
+const App = () => {
+  const [currentUser, setCurrentUser] = useState<CurrentUserContextType>({
+    username: "filiptammergard",
+  });
+
+  return (
+    <CurrentUserContext.Provider value={currentUser}>
+      <MyComponent />
+    </CurrentUserContext.Provider>
+  );
+};
+
+```
+
+這時候 context 的型別可能會是 null，必須注意
+如果你直接存取 'currentUser' 的值，TS 會報錯，因為 TS 會認為 'currentUser' 可能是 null
+可以使用 optional chaining 來避免這個問題
+
+```typescript
+
+import { useContext } from "react";
+
+const MyComponent = () => {
+  const currentUser = useContext(CurrentUserContext);
+
+  return <p>Name: {currentUser?.username}.</p>;
+};
+
+```
+
+https://react-typescript-cheatsheet.netlify.app/docs/basic/getting-started/context/
