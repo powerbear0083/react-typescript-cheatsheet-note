@@ -1212,4 +1212,47 @@ const MyComponent = () => {
 
 ```
 
+最好的方式，就是不要去檢查 null 是否存在，因為我們知道 context 不會是 null。
+有一個方式，我們可以自訂定義一個 hook ，在這個 hook 去檢查 context 是否為 null
+如果沒有提供 context ，就會拋出一個錯誤
+
+```typescript
+
+import { createContext } from "react";
+
+interface CurrentUserContextType {
+  username: string;
+}
+
+const CurrentUserContext = createContext<CurrentUserContextType | null>(null);
+
+const useCurrentUser = () => {
+  const currentUserContext = useContext(CurrentUserContext);
+
+  if (!currentUserContext) {
+    throw new Error(
+      "useCurrentUser has to be used within <CurrentUserContext.Provider>"
+    );
+  }
+
+  return currentUserContext;
+};
+
+```
+
+在 runtime 的時候檢查型別的好處是，如果 provider 沒有正確的把元件包裝起來，可以清楚在 console 看到錯誤訊息
+現在可以存取 'currentUser.username' ，而且不用檢查 null
+
+```typescript
+
+import { useContext } from "react";
+
+const MyComponent = () => {
+  const currentUser = useCurrentUser();
+
+  return <p>Username: {currentUser.username}.</p>;
+};
+
+```
+
 https://react-typescript-cheatsheet.netlify.app/docs/basic/getting-started/context/
