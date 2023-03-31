@@ -1255,4 +1255,31 @@ const MyComponent = () => {
 
 ```
 
+### Type assertion as an alternative
+
+另一個避免去檢查是否為 null 的方式是，使用 type assertion
+去跟 TS 說，你知道 context 不會是 null
+
+```typescript
+import { useContext } from "react";
+
+const MyComponent = () => {
+  const currentUser = useContext(CurrentUserContext);
+
+  return <p>Name: {currentUser!.username}.</p>;
+};
+
+```
+
+另一種方式是，使用一個空物件作為預設值
+並將其轉為預期的 context 類型
+
+```typescript
+
+const CurrentUserContext = createContext<CurrentUserContextType>(
+  {} as CurrentUserContextType
+);
+
+```
+
 https://react-typescript-cheatsheet.netlify.app/docs/basic/getting-started/context/
