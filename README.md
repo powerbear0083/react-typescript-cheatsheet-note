@@ -1282,4 +1282,87 @@ const CurrentUserContext = createContext<CurrentUserContextType>(
 
 ```
 
-https://react-typescript-cheatsheet.netlify.app/docs/basic/getting-started/context/
+你也可以使用 non-null 的型別宣告來取得同樣的結過
+
+```typescript
+
+const CurrentUserContext = createContext<CurrentUserContextType>(null!);
+
+```
+
+當你不知道使用那種宣告方式時，在 runtime 的時候，可以檢查拋出的 type asserting
+
+
+---
+
+## forwardRef/createRef
+
+可以查看 React 官方文件 (Hooks section useRef)[https://github.com/typescript-cheatsheets/react/blob/main/README.md#hooks] 的部分
+
+createRef：
+
+```typescript
+
+import { createRef, PureComponent } from "react";
+
+class CssThemeProvider extends PureComponent<Props> {
+  private rootRef = createRef<HTMLDivElement>(); // like this
+  render() {
+    return <div ref={this.rootRef}>{this.props.children}</div>;
+  }
+}
+
+```
+
+forwardRef：
+
+```typescript
+
+import { forwardRef, ReactNode } from "react";
+
+interface Props {
+  children?: ReactNode;
+  type: "submit" | "button";
+}
+export type Ref = HTMLButtonElement;
+
+export const FancyButton = forwardRef<Ref, Props>((props, ref) => (
+  <button ref={ref} className="MyClassName" type={props.type}>
+    {props.children}
+  </button>
+));
+```
+
+#### Side note
+
+從 forwardRef 得到的 ref 是可變的，因此你可以依據你要的 assigns 它
+
+下面是一個刻意的範例，如果你想讓 ref 是不可變 (immutable) 的話，需要 assigns 值給 ref
+
+```typescript
+
+import { forwardRef, ReactNode, Ref } from "react";
+
+interface Props {
+  children?: ReactNode;
+  type: "submit" | "button";
+}
+
+export const FancyButton = forwardRef(
+  (
+    props: Props,
+    ref: Ref<HTMLButtonElement> // <-- here!
+  ) => (
+    <button ref={ref} className="MyClassName" type={props.type}>
+      {props.children}
+    </button>
+  )
+);
+
+```
+
+如果你要取得 props 傳過來的　components 請使用 (ComponentPropsWithRef)[https://github.com/DefinitelyTyped/DefinitelyTyped/blob/a05cc538a42243c632f054e42eab483ebf1560ab/types/react/index.d.ts#L770]
+
+### Generic forwardRefs
+
+https://react-typescript-cheatsheet.netlify.app/docs/basic/getting-started/forward_and_create_ref
