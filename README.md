@@ -1363,6 +1363,75 @@ export const FancyButton = forwardRef(
 
 如果你要取得 props 傳過來的　components 請使用 (ComponentPropsWithRef)[https://github.com/DefinitelyTyped/DefinitelyTyped/blob/a05cc538a42243c632f054e42eab483ebf1560ab/types/react/index.d.ts#L770]
 
-### Generic forwardRefs
+### 通用 forwardRefs
 
-https://react-typescript-cheatsheet.netlify.app/docs/basic/getting-started/forward_and_create_ref
+閱讀更多關於通用 forwardRefs 的資訊，請參考 [https://fettblog.eu/typescript-react-generic-forward-refs/]
+
+#### Option 1 Wrapper component
+
+```typescript
+
+type ClickableListProps<T> = {
+  items: T[];
+  onSelect: (item: T) => void;
+  mRef?: React.Ref<HTMLUListElement> | null;
+};
+
+export function ClickableList<T>(props: ClickableListProps<T>) {
+  return (
+    <ul ref={props.mRef}>
+      {props.items.map((item, i) => (
+        <li key={i}>
+          <button onClick={(el) => props.onSelect(item)}>Select</button>
+          {item}
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+```
+
+#### Option 2 重新宣告 forwardRef
+
+```typescript
+
+// Redecalare forwardRef
+declare module "react" {
+  function forwardRef<T, P = {}>(
+    render: (props: P, ref: React.Ref<T>) => React.ReactElement | null
+  ): (props: P & React.RefAttributes<T>) => React.ReactElement | null;
+}
+
+// Just write your components like you're used to!
+import { forwardRef, ForwardedRef } from "react";
+
+interface ClickableListProps<T> {
+  items: T[];
+  onSelect: (item: T) => void;
+}
+
+function ClickableListInner<T>(
+  props: ClickableListProps<T>,
+  ref: ForwardedRef<HTMLUListElement>
+) {
+  return (
+    <ul ref={ref}>
+      {props.items.map((item, i) => (
+        <li key={i}>
+          <button onClick={(el) => props.onSelect(item)}>Select</button>
+          {item}
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+export const ClickableList = forwardRef(ClickableListInner);
+
+```
+
+### More Info
+
+* https://medium.com/@martin_hotell/react-refs-with-typescript-a32d56c4d315
+* You may also wish to do (Conditional Rendering with forwardRef)[https://github.com/typescript-cheatsheets/react/issues/167].
