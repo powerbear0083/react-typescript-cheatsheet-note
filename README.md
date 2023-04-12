@@ -1435,3 +1435,41 @@ export const ClickableList = forwardRef(ClickableListInner);
 
 * https://medium.com/@martin_hotell/react-refs-with-typescript-a32d56c4d315
 * You may also wish to do (Conditional Rendering with forwardRef)[https://github.com/typescript-cheatsheets/react/issues/167].
+
+---
+
+## Portals
+
+https://react-typescript-cheatsheet.netlify.app/docs/basic/getting-started/portals
+
+Using ReactDOM.createPortal
+
+```typescript
+
+const modalRoot = document.getElementById("modal-root") as HTMLElement;
+// assuming in your html file has a div with id 'modal-root';
+// 假設你的 html 檔案有一個 id 為 'modal-root' 的 div
+
+export class Modal extends React.Component<{ children?: React.ReactNode }> {
+  el: HTMLElement = document.createElement("div");
+
+  componentDidMount() {
+    modalRoot.appendChild(this.el);
+  }
+
+  componentWillUnmount() {
+    modalRoot.removeChild(this.el);
+  }
+
+  render() {
+    return ReactDOM.createPortal(this.props.children, this.el);
+  }
+}
+
+```
+
+(在 TS Playground 查看)[https://react-typescript-cheatsheet.netlify.app/docs/basic/getting-started/portals/]
+
+### Using Hooks
+
+https://react-typescript-cheatsheet.netlify.app/docs/basic/getting-started/portals/
