@@ -1468,8 +1468,92 @@ export class Modal extends React.Component<{ children?: React.ReactNode }> {
 
 ```
 
-(在 TS Playground 查看)[https://react-typescript-cheatsheet.netlify.app/docs/basic/getting-started/portals/]
+(在 TS Playground 查看)[shorturl.at/fjwO9]
 
 ### Using Hooks
 
-https://react-typescript-cheatsheet.netlify.app/docs/basic/getting-started/portals/
+跟上面的範例一樣，只是使用 Hooks
+
+```typescript
+
+import { useEffect, useRef, ReactNode } from "react";
+import { createPortal } from "react-dom";
+
+const modalRoot = document.querySelector("#modal-root") as HTMLElement;
+
+type ModalProps = {
+  children: ReactNode;
+};
+
+function Modal({ children }: ModalProps) {
+  // create div element only once using ref
+  // 只建立一次 div element，使用 ref
+  const elRef = useRef<HTMLDivElement | null>(null);
+  if (!elRef.current) elRef.current = document.createElement("div");
+
+  useEffect(() => {
+    const el = elRef.current!; // non-null assertion because it will never be null
+    modalRoot.appendChild(el);
+    return () => {
+      modalRoot.removeChild(el);
+    };
+  }, []);
+
+  return createPortal(children, elRef.current);
+}
+
+```
+
+(在 TS Playground 查看)[shorturl.at/fqruS]
+
+
+Modal Component Usage Example
+
+```typescript
+
+import { useState } from "react";
+
+function App() {
+  const [showModal, setShowModal] = useState(false);
+
+  return (
+    <div>
+      // you can also put this in your static html file
+      // 你也可以把這個放在你的靜態 html 檔案中
+      <div id="modal-root"></div>
+      {showModal && (
+        <Modal>
+          <div
+            style={{
+              display: "grid",
+              placeItems: "center",
+              height: "100vh",
+              width: "100vh",
+              background: "rgba(0,0,0,0.1)",
+              zIndex: 99,
+            }}
+          >
+            I'm a modal!{" "}
+            <button
+              style={{ background: "papyawhip" }}
+              onClick={() => setShowModal(false)}
+            >
+              close
+            </button>
+          </div>
+        </Modal>
+      )}
+      <button onClick={() => setShowModal(true)}>show Modal</button>
+      // rest of your app
+    </div>
+  );
+}
+
+```
+
+### 範例脈絡
+
+這個範例基礎是 React 官方文件的 (Event Bubbling Through Portals)[https://reurl.cc/8q83My] 列子
+
+
+https://react-typescript-cheatsheet.netlify.app/docs/basic/getting-started/error_boundaries
