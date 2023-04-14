@@ -1555,5 +1555,57 @@ function App() {
 
 這個範例基礎是 React 官方文件的 (Event Bubbling Through Portals)[https://reurl.cc/8q83My] 列子
 
+---
 
-https://react-typescript-cheatsheet.netlify.app/docs/basic/getting-started/error_boundaries
+## Error Boundaries
+
+
+### Option 1: Using react-error-boundary
+
+(React-error-boundary)[https://github.com/bvaughn/react-error-boundary] 是一個 TS 有支援的輕量化套件
+使用這個套件，還可以避免不在寫出 class component 這種不流行的寫法
+
+
+### Options 2: Writing your custom error boundary component 撰寫自訂的 error boundary component
+
+如果你不想使用新的套件，你可以自己撰寫一個 error boundary component
+
+```typescript
+
+import React, { Component, ErrorInfo, ReactNode } from "react";
+
+interface Props {
+  children?: ReactNode;
+}
+
+interface State {
+  hasError: boolean;
+}
+
+class ErrorBoundary extends Component<Props, State> {
+  public state: State = {
+    hasError: false
+  };
+
+  public static getDerivedStateFromError(_: Error): State {
+    // Update state so the next render will show the fallback UI.
+    return { hasError: true };
+  }
+
+  public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+    console.error("Uncaught error:", error, errorInfo);
+  }
+
+  public render() {
+    if (this.state.hasError) {
+      return <h1>Sorry.. there was an error</h1>;
+    }
+
+    return this.props.children;
+  }
+}
+
+export default ErrorBoundary;
+
+
+```
