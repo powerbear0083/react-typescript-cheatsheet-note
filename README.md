@@ -1609,3 +1609,14 @@ export default ErrorBoundary;
 
 
 ```
+
+
+## Concurrent React/React Suspense
+
+沒有寫任何東西，可以查這這裡 (https://github.com/sw-yx/brain)[https://github.com/sw-yx/brain]
+
+---
+
+## Troubleshooting Handbook: Types 問題排除：型別
+
+> 你是否有閱讀過 (the TS FAQ)[https://github.com/microsoft/TypeScript/wiki/FAQ?] 你的問題應該可以在那裡找到答案
