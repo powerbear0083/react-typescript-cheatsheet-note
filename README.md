@@ -1620,3 +1620,73 @@ export default ErrorBoundary;
 ## Troubleshooting Handbook: Types 問題排除：型別
 
 > 你是否有閱讀過 (the TS FAQ)[https://github.com/microsoft/TypeScript/wiki/FAQ?] 你的問題應該可以在那裡找到答案
+
+遇到奇怪的 error 問題時，這是使用 TS 寫 React 最困難的時候，但你並不孤單。
+要有耐心，畢竟你是在學一個全新的語言，但是你越擅長這個，你跟 compiler error 奮戰的時間就會越少，
+compiler 為你工作的時間就會越多。
+
+避免使用 any type，盡可能的去體驗 TS 的優點，
+讓我們試著熟悉一些解決問題的常見策略。
+
+
+### Union Types and Type Guarding
+
+union types 可以很方便的解決下面這種型別問題
+
+```typescript
+
+class App extends React.Component<
+  {},
+  {
+    count: number | null; // like this
+  }
+> {
+  state = {
+    count: null,
+  };
+  render() {
+    return <div onClick={() => this.increment(1)}>{this.state.count}</div>;
+  }
+  increment = (amt: number) => {
+    this.setState((state) => ({
+      count: (state.count || 0) + amt,
+    }));
+  };
+}
+
+```
+
+(View in the TypeScript Playground)[https://reurl.cc/9VqqaO]
+
+
+Type Guarding: 有時候 union types 解決了一個區去的問題，但是下其他地方 (downstream) 又產生了新的問題，
+如果有兩個 A、B 兩個 Object，A | B 不是 A or B，而是兩個兼容，如果你預期是前一種，這裡會產生混亂。
+了解一下如何撰寫 檢查、guards、assertions (可以參閱下面的條件渲染部分)。
+
+```typescript
+
+interface Admin {
+  role: string;
+}
+interface User {
+  email: string;
+}
+
+// Method 1: use `in` keyword
+function redirect(user: Admin | User) {
+  if ("role" in user) {
+    // use the `in` operator for typeguards since TS 2.7+
+    routeToAdminPage(user.role);
+  } else {
+    routeToHomePage(user.email);
+  }
+}
+
+// Method 2: custom type guard, does the same thing in older TS versions or where `in` isnt enough
+function isAdmin(user: Admin | User): user is Admin {
+  return (user as any).role !== undefined;
+}
+
+```
+
+https://react-typescript-cheatsheet.netlify.app/docs/basic/troubleshooting/types/
