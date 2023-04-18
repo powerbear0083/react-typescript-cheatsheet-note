@@ -1673,9 +1673,11 @@ interface User {
 }
 
 // Method 1: use `in` keyword
+// Method 1: 使用 `in` 關鍵字
 function redirect(user: Admin | User) {
   if ("role" in user) {
     // use the `in` operator for typeguards since TS 2.7+
+    // 自 TS 2.7+ 使用 `in` 關鍵字做型別檢查
     routeToAdminPage(user.role);
   } else {
     routeToHomePage(user.email);
@@ -1683,10 +1685,17 @@ function redirect(user: Admin | User) {
 }
 
 // Method 2: custom type guard, does the same thing in older TS versions or where `in` isnt enough
+// Method 2: 在舊版的 TS 或是 `in` 關鍵字不夠用的時候，可以自己撰寫 type guard
 function isAdmin(user: Admin | User): user is Admin {
   return (user as any).role !== undefined;
 }
 
 ```
 
-https://react-typescript-cheatsheet.netlify.app/docs/basic/troubleshooting/types/
+(View in the TypeScript Playground)[https://reurl.cc/a1Dnv9]
+
+Method 2 也被稱作為 User Defined Type Guards (UDTGs)[https://reurl.cc/XLbjW7]，這對於程式碼的閱讀性非常有幫助。
+這是 TS 如何用 typeof 和 instabceof 作 refines types 的方式。
+
+如果你需要 if...else 或 switch...case 的判斷方式，它應該可以正常運作
+如果你需要幫助，可以查看 (Discriminated Unions )[https://reurl.cc/ZXoAWV]。
