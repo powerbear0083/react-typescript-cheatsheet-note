@@ -1699,3 +1699,63 @@ Method 2 也被稱作為 User Defined Type Guards (UDTGs)[https://reurl.cc/XLbjW
 
 如果你需要 if...else 或 switch...case 的判斷方式，它應該可以正常運作
 如果你需要幫助，可以查看 (Discriminated Unions )[https://reurl.cc/ZXoAWV]。
+也可以查看  (Basarat's)[https://reurl.cc/vkxd6a] 的文章，這在使用 useReducer or reducer 很方便
+
+
+### Optional Types
+
+如果元件有選填的 props，可以使用 ? 表示，或者是使用 defaultProps
+
+```typescript
+
+class MyComponent extends React.Component<{
+  message?: string; // like this
+}> {
+  render() {
+    const { message = "default" } = this.props;
+    return <div>{message}</div>;
+  }
+}
+
+```
+
+也可以使用 ! 來判斷 undefined 是否有這個值，但是不鼓勵這樣用
+
+
+### Enum Types
+
+我們推薦盡可能的避免使用 enum types。
+
+使用 enums 當作型別會(有些的問題)[https://fettblog.eu/tidy-typescript-avoid-enums/] (TS team 也同意)[https://twitter.com/orta/status/1348966323271987201?s=20]。
+一個簡單的替代方式是使用字串的 union types。
+
+```typescript
+
+export declare type Position = "left" | "right" | "top" | "bottom";
+
+```
+
+如果你真的有使用 enums types 的需求，要記得在 TS 中 enums 預設是 number。
+你通常會將 enums types 轉換成字串。
+
+```typescript
+
+export enum ButtonSizes {
+  default = "default",
+  small = "small",
+  large = "large",
+}
+
+// usage
+export const PrimaryButton = (
+  props: Props & React.HTMLProps<HTMLButtonElement>
+) => <Button size={ButtonSizes.default} {...props} />;
+
+```
+
+
+### Type Assertion
+
+有時候你比 TS 還更清楚知道你正在使用的型別，或者使用 union types 才能更具體與其他 API 一起使用。
+
+https://react-typescript-cheatsheet.netlify.app/docs/basic/troubleshooting/types/
