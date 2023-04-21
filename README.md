@@ -1756,6 +1756,62 @@ export const PrimaryButton = (
 
 ### Type Assertion
 
-有時候你比 TS 還更清楚知道你正在使用的型別，或者使用 union types 才能更具體與其他 API 一起使用。
+有時候你比 TS 還更清楚知道你正在使用的型別，或者使用 union types 或者使用 as 關鍵字這樣更能更具體的其他 API 一起使用。
+這告訴 compiler 你知道你正在做什麼。
+
+```typescript
+
+class MyComponent extends React.Component<{
+  message: string;
+}> {
+  render() {
+    const { message } = this.props;
+    return (
+      <Component2 message={message as SpecialMessageType}>{message}</Component2>
+    );
+  }
+}
+```
+
+(View in the TypeScript Playground)[https://reurl.cc/LNxGM7]
+
+注意你不能 assert 任何事情，基本上它比較適合用在 refining types，
+因此他跟 "casting" type 不一樣。
+
+你也可以 assert 屬性為非 non-null，當你要存取的時候
+
+```typescript
+
+// ! before the period 
+// 有屬性之前
+element.parentNode!.removeChild(element); 
+
+// ! after the property accessing
+// 有屬性之後存取
+myFunction(document.getElementById(dialog.id!)!); 
+
+// definite assignment assertion... be careful!
+// 明確的賦值 assignment ... 要小心！
+let userID!: string; 
+
+```
+
+當然實際處理 null 的情況不是 asserting
+
+
+### Simulating Nominal Types ( 模擬標稱類型 )
+
+TS 的結構 typing 很方便，但是有時候你不想一直重複撰寫 type
+可以使用 simulate nominal typing 綁定 type 
+
+(Nominal Typing)[https://basarat.gitbook.io/typescript/main-1/nominaltyping]
+
+```typescript
+
+type OrderID = string & { readonly brand: unique symbol };
+type UserID = string & { readonly brand: unique symbol };
+type ID = OrderID | UserID;
+
+```
 
 https://react-typescript-cheatsheet.netlify.app/docs/basic/troubleshooting/types/
