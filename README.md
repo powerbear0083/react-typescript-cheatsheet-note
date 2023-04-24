@@ -1799,7 +1799,7 @@ let userID!: string;
 當然實際處理 null 的情況不是 asserting
 
 
-### Simulating Nominal Types ( 模擬標稱類型 )
+### Simulating Nominal Types ( 模擬標稱 Types )
 
 TS 的結構 typing 很方便，但是有時候你不想一直重複撰寫 type
 可以使用 simulate nominal typing 綁定 type 
@@ -1813,5 +1813,84 @@ type UserID = string & { readonly brand: unique symbol };
 type ID = OrderID | UserID;
 
 ```
+
+我們可以使用物件伴隨模 ( Companion Object Pattern ) 式來建立值
+
+```typescript
+
+function OrderID(id: string) {
+  return id as OrderID;
+}
+function UserID(id: string) {
+  return id as UserID;
+}
+
+```
+
+現在 TS 將不允許你在錯誤的地方使用錯誤的 ID
+
+```typescript
+
+function queryForUser(id: UserID) {
+  // ...
+}
+
+// Error, Argument of type 'OrderID' is not assignable to parameter of type 'UserID'
+// 錯誤，type 'OrderID' 的 Argument 不能指派給型別 'UserID' 的參數
+queryForUser(OrderID("foobar")); 
+
+```
+
+在未來可以使用 unique 的關鍵字來建立 nominal types  (See this PR.) [https://github.com/microsoft/TypeScript/pull/33038]
+
+
+### Intersection Types
+
+將兩個 types 結合在一起是很方便的事，舉個列子，當你的原件應該像 button 元件鏡射原本的 props 時
+
+```typescript
+
+export interface PrimaryButtonProps {
+  label: string;
+}
+export const PrimaryButton = (
+  props: PrimaryButtonProps & React.ButtonHTMLAttributes<HTMLButtonElement>
+) => {
+  // do custom buttony stuff
+  return <button {...props}> {props.label} </button>;
+};
+
+```
+
+(Playground here)[https://www.typescriptlang.org/play?#code/JYWwDg9gTgLgBAJQKYEMDG8BmUIjgcilQ3wFgAoCipAD0ljmADsYkpN0k4AFKUFKAE8AQgFcYMCE14QwAZzgBvCnDgAbFACMkagFxw5MPkwDmAbgoBfanWjw0Uwzz4gBI8ZKZwAvHAAUKnBgOPL6vPxCYhJSMvJwAGSIxDAAdFGeABIAKgCyADIAghJ8muJIcgA82fnpUgCiakggSCwAfBQAlD6tSoEA9H1wACYQcGiihrhwpdFMggYwopiYgUSLUF4VM55KKXvBsnKWPYoH8ika2mqWcBV921KtFuSWQA]
+
+你也可以使用 Intersection Types 為類似的元件建立可覆用的元件
+
+
+```typescript
+
+type BaseProps = {
+   className?: string,
+   style?: React.CSSProperties
+   name: string // used in both
+}
+type DogProps = {
+  tailsCount: number
+}
+type HumanProps = {
+  handsCount: number
+}
+export const Human = (props: BaseProps & HumanProps) => // ...
+export const Dog = (props: BaseProps & DogProps) => // ...
+
+```
+
+(View in the TypeScript Playground)[https://www.typescriptlang.org/play?#code/JYWwDg9gTgLgBAJQKYEMDG8BmUIjgcilQ3wFgAoCmATzCTgCEUBnJABRzGbgF44BvCnGFoANi2YA5FCCQB+AFxxmMKMAB2AcwA0Q4Suqj5S5OhgA6AMIBlaxwh1YwJMz1x1MpEpVqtcAPT+cACurAAmcBpwAEYQMAAWFAC+VLT0ACIQmvZcvAJ6MCjAosyWEMHqMErqwSDRSFDJqXRwABK1KOo53HyC5MLxnWGl5ZXVtfWN5CnkSAAekLBwaBDqKm0d6ibEFgBilgA8TKzdcABkGyCd3QB8eQAUAJS8d-d6B2HAAG4BNxSPFAo80W8BWa3gmU02zM5n2RxY7E43AukNuD2ePFe70+P38f3IjyAA]
+
+
+不要將 Intersection Types ( which are and operations ) 與 Union Types ( which are or operations ) 搞混。
+
+
+### Union Types
 
 https://react-typescript-cheatsheet.netlify.app/docs/basic/troubleshooting/types/
