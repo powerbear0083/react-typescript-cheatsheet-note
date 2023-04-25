@@ -1893,4 +1893,33 @@ export const Dog = (props: BaseProps & DogProps) => // ...
 
 ### Union Types
 
+請個部分尚未撰寫，同時可以查看 (Union Types)[https://github.com/typescript-cheatsheets/react/blob/main/README.md#union-types-and-type-guarding] 的範例
+
+ADVANCED 的 cheatsheet 也有關於 Discriminated Union Types，當 TS 沒有預期的那樣縮小 union type 時，這很有用。
+
+
+### Overloading Function Types
+
+具體來說，如果涉及到 function ，你可能需要的是 overload type 而不是 union type
+常用撰寫 function type 的方式如下
+
+```typescript
+
+type FunctionType1 = (x: string, y: number) => number;
+
+```
+
+但是這樣不能使用 overload，如果你要 implementation，你可以用 function 的關鍵字將他們放在一起
+
+```typescript
+
+function pickCard(x: { suit: string; card: number }[]): number;
+function pickCard(x: number): { suit: string; card: number };
+function pickCard(x): any {
+  // implementation with combined signature
+  // ...
+}
+
+```
+
 https://react-typescript-cheatsheet.netlify.app/docs/basic/troubleshooting/types/
