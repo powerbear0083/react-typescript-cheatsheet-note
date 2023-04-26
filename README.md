@@ -1909,7 +1909,7 @@ type FunctionType1 = (x: string, y: number) => number;
 
 ```
 
-但是這樣不能使用 overload，如果你要 implementation，你可以用 function 的關鍵字將他們放在一起
+但是這樣不能使用 overload，如果你要實作 (implementation)，你可以用 function 的關鍵字將他們放在一起
 
 ```typescript
 
@@ -1922,4 +1922,5 @@ function pickCard(x): any {
 
 ```
 
-https://react-typescript-cheatsheet.netlify.app/docs/basic/troubleshooting/types/
+然後你如果沒有要實作，你可以使用 function type
+
