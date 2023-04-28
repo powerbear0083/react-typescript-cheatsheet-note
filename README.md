@@ -1922,5 +1922,25 @@ function pickCard(x): any {
 
 ```
 
-然後你如果沒有要實作，你可以使用 function type
+如果你沒有要實作 overloading function ，只是要定義 d.ts 檔案，
+在這種情況底下，你可以使用 old-school 的方式來撰寫
+關鍵是對 TS 來說，function 只是沒有 key 可呼叫的 object
 
+```typescript
+
+type pickCard = {
+  (x: { suit: string; card: number }[]): number;
+  (x: number): { suit: string; card: number };
+  // no need for combined signature in this form
+  // you can also type static properties of functions here eg `pickCard.wasCalled`
+};
+
+```
+注意，當你要實際實作 overloading function 時，在實作時需要宣告 combined call signature 
+TS 不會為了做型別推斷，可以看 DOM API 的範例  e.g. createElement.
+
+(Read more about Overloading in the Handbook.)[https://www.typescriptlang.org/docs/handbook/functions.html#overloads]
+
+### Using Inferred Types
+
+https://react-typescript-cheatsheet.netlify.app/docs/basic/troubleshooting/types/
